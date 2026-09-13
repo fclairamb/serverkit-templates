@@ -36,6 +36,9 @@ compose:
       volumes:
         - gatus-data:/data
 
+  volumes:
+    gatus-data:
+
 files:
   - path: /config/config.yaml
     content: |

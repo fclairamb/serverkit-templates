@@ -1,0 +1,55 @@
+name: Nightly template sweep
+
+# Upstream moves without telling us: an image gets retagged, a project
+# renames its repository, a default changes and the container no longer
+# boots. Once a night, check every image the catalog references still
+# resolves, and actually start a rotating slice of the catalog so the whole
+# thing is exercised for real over a few weeks. Non-gating by design: a
+# failure here is a finding to fix, and the summary names the template.
+on:
+  workflow_dispatch:
+    inputs:
+      up:
+        description: how many templates to start
+        default: '6'
+      ids:
+        description: comma-separated template ids (overrides the rotation)
+        default: ''
+  schedule:
+    - cron: '23 4 * * *'
+
+permissions:
+  contents: read
+
+jobs:
+  sweep:
+    name: manifests for all, up for a rotating slice
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    env:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+      SWEEP_IDS: ${{ github.event.inputs.ids }}
+      SWEEP_UP: ${{ github.event.inputs.up }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install pyyaml
+      - name: Sign in to Docker Hub
+        if: env.DOCKERHUB_USERNAME != ''
+        run: echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+      - name: Free runner disk for image pulls
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc /opt/hostedtoolcache/CodeQL
+          docker system prune -af >/dev/null 2>&1 || true
+          df -h / | tail -1
+      - name: Sweep
+        run: |
+          up="${SWEEP_UP:-6}"
+          if [ -n "$SWEEP_IDS" ]; then
+            python3 scripts/compose_check.py --ids "$SWEEP_IDS" --manifests --up "$up"
+          else
+            python3 scripts/compose_check.py --manifests --up "$up"
+          fi

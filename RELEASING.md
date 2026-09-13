@@ -11,8 +11,17 @@ load.
 python3 scripts/generate_index.py        # rebuild the catalog
 python3 scripts/generate_readme.py       # rebuild the README template list
 python3 scripts/validate.py              # must exit 0
+python3 scripts/compose_check.py --ids <id> --manifests --up 1   # it really starts
 git diff --stat                          # sanity-check what moved
 ```
+
+CI runs the same things on every pull request (`.github/workflows/ci.yml`):
+`validate.py`, the panel's own catalog certification against this tree, and
+`compose_check.py` on the templates the PR touched (render with the panel's
+variable rules, `docker compose config`, and a manifest lookup for every
+image). A nightly sweep (`nightly.yml`) re-checks every image and starts a
+rotating slice of the catalog for real. `compose_check.py --help` explains
+the layers; `--up` needs Docker and pulls images.
 
 `validate.py` exits non-zero on a stale index, a missing or orphaned template
 file, a duplicate id, or a sha256 that no longer matches the bytes on disk.

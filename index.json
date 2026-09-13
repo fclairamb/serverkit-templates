@@ -1,7 +1,7 @@
 {
   "name": "serverkit-official",
   "schema_version": 1,
-  "updated": "2026-08-30",
+  "updated": "2026-09-12",
   "count": 213,
   "templates": [
     {
@@ -653,7 +653,7 @@
         "monitoring",
         "devops"
       ],
-      "sha256": "0da6f9a732140f63a52986bee4888ac29fbe876f6525c6e5b649c22a26e14aaa"
+      "sha256": "54898cc6d157906b92f047c06d37bb5fdb7d57a7a1aecb816ca0411a8d352e47"
     },
     {
       "id": "ghost",

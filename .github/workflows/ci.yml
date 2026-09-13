@@ -1,0 +1,90 @@
+name: Registry CI
+
+# Merging to main is publishing (RELEASING.md): every connected panel reads
+# this branch on its next catalog load. So a change has to prove itself
+# before it lands, in layers that get more expensive as they get more real:
+#
+#   validate   index.json and the templates/ tree agree (hashes, ids, files)
+#   certify    the panel's own catalog test, run against THIS tree, so the
+#              rules the installer enforces are the rules a PR is held to
+#   compose    every touched template renders with the panel's variable rules
+#              and `docker compose config` accepts it; its images resolve
+#
+# Nightly (nightly.yml) sweeps every template's images and actually starts a
+# rotating handful, so drift upstream is noticed before a customer does.
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: index and files agree
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python3 scripts/validate.py
+
+  certify:
+    name: panel catalog certification
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: registry
+      # The panel's test module certifies whatever SERVERKIT_TEMPLATES_DIR
+      # points at, with the index beside it; here that is this registry.
+      - uses: actions/checkout@v4
+        with:
+          repository: jhd3197/ServerKit
+          ref: dev
+          path: panel
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: pip
+          cache-dependency-path: panel/backend/requirements.txt
+      - name: Install the panel backend
+        working-directory: panel/backend
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt pytest
+      - name: Certify this registry with the panel's rules
+        working-directory: panel/backend
+        env:
+          SERVERKIT_TEMPLATES_DIR: ${{ github.workspace }}/registry/templates
+          SERVERKIT_TEMPLATES_INDEX: ${{ github.workspace }}/registry/index.json
+        run: python -m pytest tests/test_template_catalog_validation.py -q
+
+  compose:
+    name: compose config and image manifests
+    runs-on: ubuntu-latest
+    env:
+      DOCKERHUB_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+      DOCKERHUB_TOKEN: ${{ secrets.DOCKERHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install pyyaml
+      # Anonymous manifest lookups count against Docker Hub's pull limit, so
+      # a token (read-only is enough) keeps a busy day of PRs from failing on
+      # rate limits rather than on templates. Optional.
+      - name: Sign in to Docker Hub
+        if: env.DOCKERHUB_USERNAME != ''
+        run: echo "$DOCKERHUB_TOKEN" | docker login -u "$DOCKERHUB_USERNAME" --password-stdin
+      - name: Changed templates (pull request)
+        if: github.event_name == 'pull_request'
+        run: python3 scripts/compose_check.py --changed "origin/${{ github.base_ref }}" --manifests
+      - name: Every template (push to main)
+        if: github.event_name == 'push'
+        run: python3 scripts/compose_check.py
