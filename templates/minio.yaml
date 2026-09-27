@@ -38,6 +38,15 @@ ports:
     protocol: tcp
     description: Web console
 
+# What an app gets through `fromService` (plan 86 §C1): reachable over the
+# shared service network by container name. Access keys are not offered
+# here: the root credentials are never handed to an app.
+connection:
+  port: 9000
+  properties:
+    endpoint: "http://{host}:{port}"
+    region: us-east-1
+
 volumes:
   - name: data
     path: /data
