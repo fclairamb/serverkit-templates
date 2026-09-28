@@ -1,0 +1,104 @@
+id: otel-collector
+name: OpenTelemetry Collector
+version: "0.120"
+description: Receives traces, metrics and logs from apps over OTLP and forwards traces to a trace store such as Jaeger
+icon: https://serverkit.ai/imgs/template-icons/otel-collector.svg
+website: https://opentelemetry.io/docs/collector/
+documentation: https://opentelemetry.io/docs/collector/configuration/
+categories:
+  - monitoring
+  - tracing
+  - observability
+
+variables:
+  - name: GRPC_PORT
+    description: Host port for OTLP over gRPC
+    type: port
+    default: "4317"
+    hidden: true
+  - name: HTTP_PORT
+    description: Host port for OTLP over HTTP
+    type: port
+    default: "4318"
+    hidden: true
+  - name: BIND_ADDRESS
+    type: string
+    default: 127.0.0.1
+    hidden: true
+    description: Address the OTLP ports bind to. Apps reach the collector over the shared service network.
+
+# What an app gets through `fromService` (Attach → Tracing). ServerKit does
+# not instrument apps: an OpenTelemetry SDK in the app reads these.
+connection:
+  port: 4318
+  properties:
+    otlpEndpoint: "http://{host}:4318"
+    otlpGrpcEndpoint: "http://{host}:4317"
+
+files:
+  - path: /etc/otelcol-contrib/config.yaml
+    content: |
+      # Written by ServerKit at install. Traces go to TRACES_OTLP_ENDPOINT
+      # (set by attaching a trace store such as Jaeger to this collector);
+      # until one is attached they are counted by the debug exporter and
+      # dropped.
+      receivers:
+        otlp:
+          protocols:
+            grpc:
+              endpoint: 0.0.0.0:4317
+            http:
+              endpoint: 0.0.0.0:4318
+
+      processors:
+        batch: {}
+
+      exporters:
+        debug:
+          verbosity: basic
+        otlp/traces:
+          endpoint: ${env:TRACES_OTLP_ENDPOINT:-127.0.0.1:1}
+          tls:
+            insecure: true
+          retry_on_failure:
+            enabled: false
+          sending_queue:
+            enabled: false
+
+      service:
+        pipelines:
+          traces:
+            receivers: [otlp]
+            processors: [batch]
+            exporters: [otlp/traces, debug]
+          metrics:
+            receivers: [otlp]
+            processors: [batch]
+            exporters: [debug]
+          logs:
+            receivers: [otlp]
+            processors: [batch]
+            exporters: [debug]
+
+ports:
+  - port: "${GRPC_PORT}"
+    protocol: tcp
+    description: OTLP gRPC
+  - port: "${HTTP_PORT}"
+    protocol: tcp
+    description: OTLP HTTP
+
+requirements:
+  memory: 256MB
+  storage: 1GB
+
+compose:
+  services:
+    collector:
+      image: otel/opentelemetry-collector-contrib:0.120.0
+      container_name: ${APP_NAME}
+      restart: unless-stopped
+      command: ["--config=/etc/otelcol-contrib/config.yaml"]
+      ports:
+        - "${BIND_ADDRESS}:${GRPC_PORT}:4317"
+        - "${BIND_ADDRESS}:${HTTP_PORT}:4318"

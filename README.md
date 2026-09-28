@@ -49,7 +49,7 @@ No ServerKit yet? [Install it in one line](https://github.com/jhd3197/ServerKit#
 - [🎮 Gaming](#-gaming) — 1
 - [🏠 Home Automation](#-home-automation) — 6
 - [🎬 Media & Downloads](#-media--downloads) — 26
-- [📈 Monitoring & Status](#-monitoring--status) — 16
+- [📈 Monitoring & Status](#-monitoring--status) — 17
 - [🌐 Networking & DNS](#-networking--dns) — 9
 - [📰 News & RSS](#-news--rss) — 2
 - [🗒️ Notes & Wikis](#-notes--wikis) — 5
@@ -64,7 +64,7 @@ No ServerKit yet? [Install it in one line](https://github.com/jhd3197/ServerKit#
 ## 📦 The Templates
 
 <!-- BEGIN TEMPLATE CATALOG -->
-**215 templates** and counting — grouped by primary category.
+**216 templates** and counting — grouped by primary category.
 
 ### 🤖 AI & LLM
 
@@ -277,6 +277,7 @@ No ServerKit yet? [Install it in one line](https://github.com/jhd3197/ServerKit#
 | **[Jaeger](https://www.jaegertracing.io)** | Open-source distributed tracing system for monitoring and troubleshooting microservices | [Install](https://serverkit.ai/templates/jaeger) · [YAML](templates/jaeger.yaml) |
 | **[LibreSpeed](https://librespeed.org)** | Lightweight self-hosted speed test — measure download, upload, ping, and jitter from any browser | [Install](https://serverkit.ai/templates/librespeed) · [YAML](templates/librespeed.yaml) |
 | **[Netdata](https://netdata.cloud)** | Real-time performance and health monitoring for systems and applications | [Install](https://serverkit.ai/templates/netdata) · [YAML](templates/netdata.yaml) |
+| **[OpenTelemetry Collector](https://opentelemetry.io/docs/collector/)** | Receives traces, metrics and logs from apps over OTLP and forwards traces to a trace store such as Jaeger | [Install](https://serverkit.ai/templates/otel-collector) · [YAML](templates/otel-collector.yaml) |
 | **[Prometheus](https://prometheus.io)** | Open-source monitoring and alerting toolkit designed for reliability and scalability | [Install](https://serverkit.ai/templates/prometheus) · [YAML](templates/prometheus.yaml) |
 | **[SigNoz](https://signoz.io)** | OpenTelemetry-native observability platform for traces, metrics, and logs (an open-source APM alternative to Datadog). | [Install](https://serverkit.ai/templates/signoz) · [YAML](templates/signoz.yaml) |
 | **[SmokePing](https://oss.oetiker.ch/smokeping/)** | Network latency monitoring with beautiful interactive graphs — see jitter and packet loss over time | [Install](https://serverkit.ai/templates/smokeping) · [YAML](templates/smokeping.yaml) |

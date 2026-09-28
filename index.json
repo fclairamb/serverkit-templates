@@ -2,7 +2,7 @@
   "name": "serverkit-official",
   "schema_version": 1,
   "updated": "2026-09-27",
-  "count": 215,
+  "count": 216,
   "templates": [
     {
       "id": "2fauth",
@@ -965,7 +965,7 @@
         "tracing",
         "observability"
       ],
-      "sha256": "e6623bfa726155e0be06cf9fa506a7c48cd80c0b82e97e29b02192ffe4cdf1e4"
+      "sha256": "43e7ce0b42a2b1cb6282a9ca058cb69c947a04705e9f876773a3aea033e17748"
     },
     {
       "id": "jellyfin",
@@ -1713,6 +1713,19 @@
         "chat"
       ],
       "sha256": "40fae7de12b04ac6f109706361870a9749cd8f31cc3fdcab8194ddf008651e25"
+    },
+    {
+      "id": "otel-collector",
+      "name": "OpenTelemetry Collector",
+      "version": "0.120",
+      "description": "Receives traces, metrics and logs from apps over OTLP and forwards traces to a trace store such as Jaeger",
+      "icon": "https://serverkit.ai/imgs/template-icons/otel-collector.svg",
+      "categories": [
+        "monitoring",
+        "tracing",
+        "observability"
+      ],
+      "sha256": "54b0bd33f8f6d43cac5c1354c76b9136f037fc87a01c05617ccd66a70473e368"
     },
     {
       "id": "outline",
