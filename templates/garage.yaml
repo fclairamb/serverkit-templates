@@ -1,0 +1,103 @@
+id: garage
+name: Garage
+version: "2.1.0"
+description: Lightweight S3-compatible object storage. Give each app its own bucket and a key that can only reach it.
+icon: https://serverkit.ai/imgs/template-icons/garage.svg
+website: https://garagehq.deuxfleurs.fr
+documentation: https://garagehq.deuxfleurs.fr/documentation/
+categories:
+  - storage
+  - s3
+
+variables:
+  - name: API_PORT
+    description: Host port for the S3 API
+    type: port
+    default: "3900"
+    hidden: true
+  - name: BIND_ADDRESS
+    type: string
+    default: 127.0.0.1
+    hidden: true
+    description: Address the S3 port binds to. 127.0.0.1 keeps it private; apps reach it over the shared service network.
+  - name: RPC_SECRET
+    description: Cluster RPC secret (32 bytes, hex)
+    type: random
+    length: 64
+    hidden: true
+  - name: ADMIN_TOKEN
+    description: Admin API token
+    type: password
+    length: 40
+    hidden: true
+
+# What an app gets through `fromService`, reachable over the shared service
+# network by container name. Keys are not offered here: "Attach storage"
+# creates a bucket and a key scoped to it for each app.
+connection:
+  port: 3900
+  provisioner: garage
+  properties:
+    endpoint: "http://{host}:{port}"
+    region: garage
+
+files:
+  - path: /etc/garage.toml
+    mode: 0600
+    content: |
+      metadata_dir = "/var/lib/garage/meta"
+      data_dir = "/var/lib/garage/data"
+      db_engine = "sqlite"
+      replication_factor = 1
+      rpc_bind_addr = "[::]:3901"
+      rpc_public_addr = "127.0.0.1:3901"
+      rpc_secret = "${RPC_SECRET}"
+
+      [s3_api]
+      s3_region = "garage"
+      api_bind_addr = "[::]:3900"
+
+      [admin]
+      api_bind_addr = "[::]:3903"
+      admin_token = "${ADMIN_TOKEN}"
+
+ports:
+  - port: "${API_PORT}"
+    protocol: tcp
+    description: S3 API
+
+volumes:
+  - name: meta
+    path: /var/lib/garage/meta
+    description: Object metadata
+  - name: data
+    path: /var/lib/garage/data
+    description: Object data
+
+requirements:
+  memory: 256MB
+  storage: 10GB
+
+compose:
+  services:
+    garage:
+      image: dxflrs/garage:v2.1.0
+      container_name: ${APP_NAME}
+      restart: unless-stopped
+      ports:
+        - "${BIND_ADDRESS}:${API_PORT}:3900"
+      volumes:
+        - garage_meta:/var/lib/garage/meta
+        - garage_data:/var/lib/garage/data
+      healthcheck:
+        # The image is a single static binary (no shell), so the check is the
+        # garage CLI itself: it succeeds once the node answers RPC.
+        test: ["CMD", "/garage", "status"]
+        interval: 30s
+        timeout: 10s
+        retries: 3
+        start_period: 10s
+
+  volumes:
+    garage_meta:
+    garage_data:

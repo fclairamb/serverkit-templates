@@ -57,13 +57,13 @@ No ServerKit yet? [Install it in one line](https://github.com/jhd3197/ServerKit#
 - [✅ Productivity](#-productivity) — 29
 - [🔍 Search](#-search) — 3
 - [🔒 Security & Auth](#-security--auth) — 8
-- [💾 Storage & Files](#-storage--files) — 12
+- [💾 Storage & Files](#-storage--files) — 13
 <!-- END TEMPLATE TOC -->
 
 ## 📦 The Templates
 
 <!-- BEGIN TEMPLATE CATALOG -->
-**213 templates** and counting — grouped by primary category.
+**214 templates** and counting — grouped by primary category.
 
 ### 🤖 AI & LLM
 
@@ -384,6 +384,7 @@ No ServerKit yet? [Install it in one line](https://github.com/jhd3197/ServerKit#
 | **[Duplicati](https://www.duplicati.com)** | Free backup software to store encrypted backups online | [Install](https://serverkit.ai/templates/duplicati) · [YAML](templates/duplicati.yaml) |
 | **[File Browser](https://filebrowser.org)** | Web-based file manager with upload, download, and file sharing features | [Install](https://serverkit.ai/templates/filebrowser) · [YAML](templates/filebrowser.yaml) |
 | **[Filestash](https://www.filestash.app)** | Modern web file manager that connects to SFTP, S3, FTP, WebDAV, Git, and more — a Dropbox-like UI over your existing storage | [Install](https://serverkit.ai/templates/filestash) · [YAML](templates/filestash.yaml) |
+| **[Garage](https://garagehq.deuxfleurs.fr)** | Lightweight S3-compatible object storage. Give each app its own bucket and a key that can only reach it. | [Install](https://serverkit.ai/templates/garage) · [YAML](templates/garage.yaml) |
 | **[Kopia](https://kopia.io)** | Fast and secure backup tool with encryption, deduplication, and cloud storage support — managed from a web UI | [Install](https://serverkit.ai/templates/kopia) · [YAML](templates/kopia.yaml) |
 | **[MinIO](https://min.io)** | High-performance, S3-compatible object storage for cloud-native applications | [Install](https://serverkit.ai/templates/minio) · [YAML](templates/minio.yaml) |
 | **[Nextcloud](https://nextcloud.com)** | Self-hosted productivity platform with file sync and collaboration | [Install](https://serverkit.ai/templates/nextcloud) · [YAML](templates/nextcloud.yaml) |
