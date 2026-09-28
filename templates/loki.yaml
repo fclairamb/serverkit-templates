@@ -17,6 +17,12 @@ variables:
     default: "3100"
     hidden: true
 
+# What an app (Grafana) gets through `fromService`, over the shared network.
+connection:
+  port: 3100
+  properties:
+    url: "http://{host}:{port}"
+
 ports:
   - port: 3100
     protocol: tcp
