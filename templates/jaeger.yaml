@@ -22,6 +22,15 @@ variables:
     default: "14268"
     hidden: true
 
+# What the OpenTelemetry Collector gets through `fromService` (Attach → Traces
+# on the collector), over the shared service network. Jaeger accepts OTLP on
+# 4317/4318 by default.
+connection:
+  port: 4317
+  properties:
+    otlpGrpc: "{host}:4317"
+    url: "http://{host}:16686"
+
 ports:
   - port: 16686
     protocol: tcp
@@ -38,12 +47,21 @@ volumes:
     path: /badger
     description: Badger storage for traces
 
+requirements:
+  memory: 1GB
+  storage: 5GB
+
 compose:
   services:
     jaeger:
       image: jaegertracing/all-in-one:${VERSION:-1.52}
       container_name: ${APP_NAME}
       restart: unless-stopped
+      # The image runs as an unprivileged user, and a fresh named volume at
+      # /badger is root-owned, so badger could not create its key/data
+      # directories and Jaeger exited at start ("mkdir /badger/key:
+      # permission denied"). The volume is private to this container.
+      user: "0"
       environment:
         - SPAN_STORAGE_TYPE=badger
         - BADGER_EPHEMERAL=false
