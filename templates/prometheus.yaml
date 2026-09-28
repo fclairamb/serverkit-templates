@@ -19,6 +19,42 @@ variables:
   - name: RETENTION_TIME
     description: Data retention period
     default: 15d
+  - name: PANEL_TARGET
+    description: Where Prometheus reaches this panel (host:port, from inside the container)
+    default: host.docker.internal:80
+    hidden: true
+  - name: PANEL_SCHEME
+    description: http, or https if the panel only answers on HTTPS
+    default: http
+    hidden: true
+
+# What an app (Grafana) gets through `fromService`, over the shared network.
+connection:
+  port: 9090
+  properties:
+    url: "http://{host}:{port}"
+
+files:
+  - path: /etc/prometheus/prometheus.yml
+    content: |
+      # Written by ServerKit at install. The serverkit job scrapes this panel
+      # (/api/v1/fleet-monitor/prometheus) with the panel's own scrape token.
+      global:
+        scrape_interval: 15s
+        evaluation_interval: 15s
+
+      scrape_configs:
+        - job_name: prometheus
+          static_configs:
+            - targets: ['localhost:9090']
+
+        - job_name: serverkit
+          scheme: ${PANEL_SCHEME}
+          metrics_path: /api/v1/fleet-monitor/prometheus
+          params:
+            token: ['${SERVERKIT_METRICS_TOKEN}']
+          static_configs:
+            - targets: ['${PANEL_TARGET}']
 
 ports:
   - port: 9090
@@ -29,9 +65,10 @@ volumes:
   - name: data
     path: /prometheus
     description: Prometheus data storage
-  - name: config
-    path: /etc/prometheus
-    description: Configuration files
+
+requirements:
+  memory: 2GB
+  storage: 20GB
 
 compose:
   services:
@@ -46,25 +83,14 @@ compose:
         - '--web.console.libraries=/etc/prometheus/console_libraries'
         - '--web.console.templates=/etc/prometheus/consoles'
         - '--web.enable-lifecycle'
+      # Lets the container reach the panel on the host (Linux has no
+      # host.docker.internal otherwise).
+      extra_hosts:
+        - "host.docker.internal:host-gateway"
       volumes:
         - prometheus_data:/prometheus
-        - prometheus_config:/etc/prometheus
       ports:
         - "${HTTP_PORT}:9090"
 
   volumes:
     prometheus_data:
-    prometheus_config:
-
-post_install: |
-  # Create default prometheus config
-  cat > /var/serverkit/apps/${APP_NAME}/config/prometheus.yml << 'EOF'
-  global:
-    scrape_interval: 15s
-    evaluation_interval: 15s
-
-  scrape_configs:
-    - job_name: 'prometheus'
-      static_configs:
-        - targets: ['localhost:9090']
-  EOF
