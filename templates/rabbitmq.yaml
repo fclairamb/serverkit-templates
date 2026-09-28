@@ -1,0 +1,82 @@
+id: rabbitmq
+name: RabbitMQ
+version: "4.1"
+description: Message broker for background jobs and queues (AMQP), used by Celery, Sidekiq-style workers and most job libraries
+icon: https://serverkit.ai/imgs/template-icons/rabbitmq.svg
+website: https://www.rabbitmq.com
+documentation: https://www.rabbitmq.com/docs
+categories:
+  - queue
+  - messaging
+
+variables:
+  - name: PORT
+    description: Host port for AMQP
+    type: port
+    default: "5672"
+    hidden: true
+  - name: BIND_ADDRESS
+    type: string
+    default: 127.0.0.1
+    hidden: true
+    description: Address the AMQP port binds to. 127.0.0.1 keeps it private; apps reach it over the shared service network.
+  - name: RABBITMQ_USER
+    description: Broker username
+    default: serverkit
+    hidden: true
+  - name: RABBITMQ_PASSWORD
+    description: Broker password
+    type: password
+    length: 32
+    hidden: true
+
+# What an app gets through `fromService`, over the shared service network.
+# A queue can deliver a message twice: jobs should be safe to run again.
+connection:
+  port: 5672
+  properties:
+    url: "amqp://{var_url.RABBITMQ_USER}:{var_url.RABBITMQ_PASSWORD}@{host}:{port}/"
+    host: "{host}"
+    port: "{port}"
+    username: "{var.RABBITMQ_USER}"
+    password: "{var.RABBITMQ_PASSWORD}"
+
+ports:
+  - port: "${PORT}"
+    protocol: tcp
+    description: AMQP
+
+volumes:
+  - name: data
+    path: /var/lib/rabbitmq
+    description: Queues and messages
+
+requirements:
+  memory: 512MB
+  storage: 2GB
+
+compose:
+  services:
+    rabbitmq:
+      image: rabbitmq:4.1-alpine
+      container_name: ${APP_NAME}
+      # The data directory is keyed by node name, which derives from the
+      # hostname: a stable hostname keeps queues across container recreates.
+      hostname: ${APP_NAME}
+      restart: unless-stopped
+      environment:
+        - RABBITMQ_DEFAULT_USER=${RABBITMQ_USER}
+        - RABBITMQ_DEFAULT_PASS=${RABBITMQ_PASSWORD}
+      ports:
+        - "${BIND_ADDRESS}:${PORT}:5672"
+      volumes:
+        - rabbitmq_data:/var/lib/rabbitmq
+      healthcheck:
+        test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+        interval: 30s
+        timeout: 10s
+        retries: 5
+        start_period: 30s
+
+  volumes:
+    rabbitmq_data:

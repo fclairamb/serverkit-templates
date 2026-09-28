@@ -58,12 +58,13 @@ No ServerKit yet? [Install it in one line](https://github.com/jhd3197/ServerKit#
 - [🔍 Search](#-search) — 3
 - [🔒 Security & Auth](#-security--auth) — 8
 - [💾 Storage & Files](#-storage--files) — 13
+- [📦 Queue](#-queue) — 1
 <!-- END TEMPLATE TOC -->
 
 ## 📦 The Templates
 
 <!-- BEGIN TEMPLATE CATALOG -->
-**214 templates** and counting — grouped by primary category.
+**215 templates** and counting — grouped by primary category.
 
 ### 🤖 AI & LLM
 
@@ -393,6 +394,12 @@ No ServerKit yet? [Install it in one line](https://github.com/jhd3197/ServerKit#
 | **[Seafile](https://www.seafile.com)** | Open-source file sync and share platform with built-in collaboration | [Install](https://serverkit.ai/templates/seafile) · [YAML](templates/seafile.yaml) |
 | **[SFTPGo](https://sftpgo.com)** | Full-featured SFTP, FTP/S, and WebDAV server with a web admin UI and virtual folders | [Install](https://serverkit.ai/templates/sftpgo) · [YAML](templates/sftpgo.yaml) |
 | **[Syncthing](https://syncthing.net)** | Continuous file synchronization for decentralized, peer-to-peer sync | [Install](https://serverkit.ai/templates/syncthing) · [YAML](templates/syncthing.yaml) |
+
+### 📦 Queue
+
+| App | Description | Links |
+|---|---|---|
+| **[RabbitMQ](https://www.rabbitmq.com)** | Message broker for background jobs and queues (AMQP), used by Celery, Sidekiq-style workers and most job libraries | [Install](https://serverkit.ai/templates/rabbitmq) · [YAML](templates/rabbitmq.yaml) |
 
 🚀 = deployed straight from its Git repository (repo template) rather than a Docker Compose stack.
 <!-- END TEMPLATE CATALOG -->

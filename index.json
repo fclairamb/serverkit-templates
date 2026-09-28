@@ -2,7 +2,7 @@
   "name": "serverkit-official",
   "schema_version": 1,
   "updated": "2026-09-27",
-  "count": 214,
+  "count": 215,
   "templates": [
     {
       "id": "2fauth",
@@ -2089,6 +2089,18 @@
         "search"
       ],
       "sha256": "204554924480566bb80c3a029ce7a942f57ccb9fa827cb07d6b2044220d98a28"
+    },
+    {
+      "id": "rabbitmq",
+      "name": "RabbitMQ",
+      "version": "4.1",
+      "description": "Message broker for background jobs and queues (AMQP), used by Celery, Sidekiq-style workers and most job libraries",
+      "icon": "https://serverkit.ai/imgs/template-icons/rabbitmq.svg",
+      "categories": [
+        "queue",
+        "messaging"
+      ],
+      "sha256": "e7448cb46d65563879a7db5f5345747ee8026f17e7b3981943b86f25f208327d"
     },
     {
       "id": "radarr",
