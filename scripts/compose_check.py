@@ -222,8 +222,10 @@ class Report:
 
 def compose_config(workdir: Path, project: str) -> list[str]:
     sh(["docker", "compose", "-p", project, "-f", str(workdir / "docker-compose.yml"), "config", "-q"], cwd=workdir)
-    images = sh(["docker", "compose", "-p", project, "-f", str(workdir / "docker-compose.yml"), "config", "--images"],
-                cwd=workdir).stdout.split()
+    config = json.loads(sh(["docker", "compose", "-p", project, "-f", str(workdir / "docker-compose.yml"),
+                            "config", "--format", "json"], cwd=workdir).stdout)
+    # A service that builds its own image has nothing in a registry to look up.
+    images = [s["image"] for s in config.get("services", {}).values() if s.get("image") and "build" not in s]
     return sorted(set(images))
 
 
