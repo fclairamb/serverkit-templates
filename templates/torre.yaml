@@ -12,6 +12,10 @@ categories:
 # First-party: floats to the top of the catalog.
 featured: true
 
+# Publish <app>.<base domain> on install; SERVICE_FQDN_TORRE below is that
+# name, which Torre must be told to answer.
+auto_domain: true
+
 variables:
   - name: HTTP_PORT
     description: Port for the Torre web app (auto-assigned)
@@ -19,7 +23,7 @@ variables:
     default: "1886"
     hidden: true
   - name: DOMAIN
-    description: Domain you will attach to Torre (e.g. chess.example.com). Torre refuses public host names it was not told about, so leave it empty to use it by IP only.
+    description: Another domain you will attach to Torre (e.g. chess.example.com). The panel's own subdomain for it is allowed already.
     default: ""
 
 ports:
@@ -42,7 +46,7 @@ compose:
       ports:
         - "${HTTP_PORT}:1886"
       environment:
-        TORRE_ALLOWED_HOSTS: "${DOMAIN}"
+        TORRE_ALLOWED_HOSTS: "${SERVICE_FQDN_TORRE},${DOMAIN}"
       volumes:
         - torre_data:/data
 
@@ -93,5 +97,6 @@ post_install: |
   and progress. Keep it private, or put it behind the panel's access
   controls before attaching a public domain.
 
-  If you attach a domain other than "${DOMAIN}", set TORRE_ALLOWED_HOSTS
-  in the app's environment to it, or Torre answers 400.
+  Torre answers the subdomain the panel published for it and "${DOMAIN}".
+  If you attach any other domain, add it to TORRE_ALLOWED_HOSTS (comma
+  separated) in the app's environment, or Torre answers 400.
