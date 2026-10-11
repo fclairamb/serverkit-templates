@@ -1,8 +1,8 @@
 {
   "name": "serverkit-official",
   "schema_version": 1,
-  "updated": "2026-09-27",
-  "count": 216,
+  "updated": "2026-10-11",
+  "count": 217,
   "templates": [
     {
       "id": "2fauth",
@@ -2436,6 +2436,19 @@
         "chat"
       ],
       "sha256": "30373cb4b14e2a2d872790245ab4ad2e57b7233d402f53b2cbeee9afa5e5c19f"
+    },
+    {
+      "id": "torre",
+      "name": "Torre",
+      "version": "0.3.2",
+      "description": "Learn chess step by step with lessons, puzzles and Stockfish bots, then review every game you play.",
+      "icon": "https://serverkit.ai/imgs/template-icons/torre.png",
+      "categories": [
+        "gaming",
+        "education"
+      ],
+      "featured": true,
+      "sha256": "6666a203c888a8321e2128d4f4a7198c542ecb380f0f5523561a331cef4dffb6"
     },
     {
       "id": "traefik",

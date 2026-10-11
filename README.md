@@ -46,7 +46,7 @@ No ServerKit yet? [Install it in one line](https://github.com/jhd3197/ServerKit#
 - [⚙️ DevOps & Containers](#-devops--containers) — 10
 - [📄 Documents & E-Signing](#-documents--e-signing) — 7
 - [💰 Finance](#-finance) — 5
-- [🎮 Gaming](#-gaming) — 1
+- [🎮 Gaming](#-gaming) — 2
 - [🏠 Home Automation](#-home-automation) — 6
 - [🎬 Media & Downloads](#-media--downloads) — 26
 - [📈 Monitoring & Status](#-monitoring--status) — 17
@@ -64,7 +64,7 @@ No ServerKit yet? [Install it in one line](https://github.com/jhd3197/ServerKit#
 ## 📦 The Templates
 
 <!-- BEGIN TEMPLATE CATALOG -->
-**216 templates** and counting — grouped by primary category.
+**217 templates** and counting — grouped by primary category.
 
 ### 🤖 AI & LLM
 
@@ -219,6 +219,7 @@ No ServerKit yet? [Install it in one line](https://github.com/jhd3197/ServerKit#
 | App | Description | Links |
 |---|---|---|
 | **[Minecraft Server](https://www.minecraft.net)** | Dedicated Minecraft Java Edition server with automatic version management (itzg image) | [Install](https://serverkit.ai/templates/minecraft-server) · [YAML](templates/minecraft-server.yaml) |
+| **[Torre](https://torre.sh)** | Learn chess step by step with lessons, puzzles and Stockfish bots, then review every game you play. | [Install](https://serverkit.ai/templates/torre) · [YAML](templates/torre.yaml) |
 
 ### 🏠 Home Automation
 

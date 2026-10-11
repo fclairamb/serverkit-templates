@@ -1,0 +1,97 @@
+id: torre
+name: Torre
+version: "0.3.2"
+description: Learn chess step by step with lessons, puzzles and Stockfish bots, then review every game you play.
+icon: https://serverkit.ai/imgs/template-icons/torre.png
+website: https://torre.sh
+documentation: https://github.com/jhd3197/Torre#readme
+categories:
+  - gaming
+  - education
+
+# First-party: floats to the top of the catalog.
+featured: true
+
+variables:
+  - name: HTTP_PORT
+    description: Port for the Torre web app (auto-assigned)
+    type: port
+    default: "1886"
+    hidden: true
+  - name: DOMAIN
+    description: Domain you will attach to Torre (e.g. chess.example.com). Torre refuses public host names it was not told about, so leave it empty to use it by IP only.
+    default: ""
+
+ports:
+  - port: "${HTTP_PORT}"
+    protocol: http
+    description: Torre
+
+requirements:
+  memory: 512MB
+  storage: 1GB
+
+compose:
+  services:
+    torre:
+      build:
+        context: .
+        dockerfile: Dockerfile
+      container_name: ${APP_NAME}
+      restart: unless-stopped
+      ports:
+        - "${HTTP_PORT}:1886"
+      environment:
+        TORRE_ALLOWED_HOSTS: "${DOMAIN}"
+      volumes:
+        - torre_data:/data
+
+  volumes:
+    torre_data:
+
+files:
+  - path: Dockerfile
+    content: |
+      FROM python:3.12-slim
+
+      ENV PYTHONDONTWRITEBYTECODE=1 \
+          PYTHONUNBUFFERED=1 \
+          PIP_NO_CACHE_DIR=1 \
+          PIP_DISABLE_PIP_VERSION_CHECK=1
+
+      # Debian's Stockfish lands in /usr/games, off the default PATH.
+      RUN apt-get update \
+       && apt-get install -y --no-install-recommends stockfish \
+       && rm -rf /var/lib/apt/lists/*
+
+      RUN pip install "torre[coach]==0.3.2"
+
+      RUN useradd --uid 10001 --create-home --shell /bin/bash torre \
+       && mkdir -p /data \
+       && chown -R torre:torre /data
+
+      USER torre
+
+      # TORRE_HOSTED keeps visitors from installing engines or packages,
+      # which would run programs inside this container.
+      ENV TORRE_HOME=/data \
+          TORRE_HOST=0.0.0.0 \
+          TORRE_HOSTED=1 \
+          STOCKFISH_PATH=/usr/games/stockfish
+
+      EXPOSE 1886
+
+      HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
+        CMD python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:1886/', timeout=4)" || exit 1
+
+      CMD ["torre", "serve", "--port", "1886"]
+
+post_install: |
+  Torre is running at http://your-server:${HTTP_PORT}/
+
+  Torre has no login: anyone who can open it shares one archive of games
+  and progress. Keep it private, or put it behind the panel's access
+  controls before attaching a public domain.
+
+  If you attach a domain other than "${DOMAIN}", set TORRE_ALLOWED_HOSTS
+  in the app's environment to it, or Torre answers 400.
