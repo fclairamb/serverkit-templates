@@ -2440,7 +2440,7 @@
     {
       "id": "torre",
       "name": "Torre",
-      "version": "0.3.2",
+      "version": "0.3.4",
       "description": "Learn chess step by step with lessons, puzzles and Stockfish bots, then review every game you play.",
       "icon": "https://serverkit.ai/imgs/template-icons/torre.png",
       "categories": [
@@ -2448,7 +2448,7 @@
         "education"
       ],
       "featured": true,
-      "sha256": "35a6157bf5062e1f89c88248d9836785a6ad8164aa94ab4f9234f74fc501f839"
+      "sha256": "92851a6dcefff20b97c18a2105192305e4c91f7c747d477937c87b530f87c050"
     },
     {
       "id": "traefik",

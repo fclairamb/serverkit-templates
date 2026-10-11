@@ -1,6 +1,6 @@
 id: torre
 name: Torre
-version: "0.3.2"
+version: "0.3.4"
 description: Learn chess step by step with lessons, puzzles and Stockfish bots, then review every game you play.
 icon: https://serverkit.ai/imgs/template-icons/torre.png
 website: https://torre.sh
@@ -12,8 +12,7 @@ categories:
 # First-party: floats to the top of the catalog.
 featured: true
 
-# Publish <app>.<base domain> on install; SERVICE_FQDN_TORRE below is that
-# name, which Torre must be told to answer.
+# Publish <app>.<base domain> on install.
 auto_domain: true
 
 variables:
@@ -22,9 +21,6 @@ variables:
     type: port
     default: "1886"
     hidden: true
-  - name: DOMAIN
-    description: Another domain you will attach to Torre (e.g. chess.example.com). The panel's own subdomain for it is allowed already.
-    default: ""
 
 ports:
   - port: "${HTTP_PORT}"
@@ -45,8 +41,6 @@ compose:
       restart: unless-stopped
       ports:
         - "${HTTP_PORT}:1886"
-      environment:
-        TORRE_ALLOWED_HOSTS: "${SERVICE_FQDN_TORRE},${DOMAIN}"
       volumes:
         - torre_data:/data
 
@@ -68,7 +62,7 @@ files:
        && apt-get install -y --no-install-recommends stockfish \
        && rm -rf /var/lib/apt/lists/*
 
-      RUN pip install "torre[coach]==0.3.2"
+      RUN pip install "torre[coach]==0.3.4"
 
       RUN useradd --uid 10001 --create-home --shell /bin/bash torre \
        && mkdir -p /data \
@@ -77,10 +71,12 @@ files:
       USER torre
 
       # TORRE_HOSTED keeps visitors from installing engines or packages,
-      # which would run programs inside this container.
+      # which would run programs inside this container. The panel's proxy
+      # decides which domains reach Torre, so it answers any host name.
       ENV TORRE_HOME=/data \
           TORRE_HOST=0.0.0.0 \
           TORRE_HOSTED=1 \
+          TORRE_ALLOWED_HOSTS=* \
           STOCKFISH_PATH=/usr/games/stockfish
 
       EXPOSE 1886
@@ -96,7 +92,3 @@ post_install: |
   Torre has no login: anyone who can open it shares one archive of games
   and progress. Keep it private, or put it behind the panel's access
   controls before attaching a public domain.
-
-  Torre answers the subdomain the panel published for it and "${DOMAIN}".
-  If you attach any other domain, add it to TORRE_ALLOWED_HOSTS (comma
-  separated) in the app's environment, or Torre answers 400.
