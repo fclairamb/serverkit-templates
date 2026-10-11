@@ -1,6 +1,6 @@
 id: gitea
 name: Gitea
-version: "1.21"
+version: "1.27"
 description: Lightweight self-hosted Git service
 icon: https://serverkit.ai/imgs/template-icons/gitea.svg
 categories:
@@ -33,11 +33,14 @@ variables:
 compose:
   services:
     app:
-      image: gitea/gitea:1.21
+      image: gitea/gitea:1.27
       container_name: ${APP_NAME}
       restart: unless-stopped
       ports:
-        - "${HTTP_PORT}:3000"
+        # Web traffic goes through the panel's nginx at /gitea, never straight
+        # to the port: an exposed Gitea with open signups was used to run a
+        # cryptominer on a panel.
+        - "127.0.0.1:${HTTP_PORT}:3000"
         - "${SSH_PORT}:22"
       environment:
         USER_UID: 1000
@@ -48,6 +51,8 @@ compose:
         GITEA__database__USER: gitea
         GITEA__database__PASSWD: "${DB_PASSWORD}"
         GITEA__security__SECRET_KEY: "${SECRET_KEY}"
+        GITEA__service__DISABLE_REGISTRATION: "true"
+        GITEA__openid__ENABLE_OPENID_SIGNUP: "false"
       volumes:
         - gitea-data:/data
         - /etc/timezone:/etc/timezone:ro

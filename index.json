@@ -695,7 +695,7 @@
     {
       "id": "gitea",
       "name": "Gitea",
-      "version": "1.21",
+      "version": "1.27",
       "description": "Lightweight self-hosted Git service",
       "icon": "https://serverkit.ai/imgs/template-icons/gitea.svg",
       "categories": [
@@ -703,7 +703,7 @@
         "git",
         "development"
       ],
-      "sha256": "34318511e488d4dd1d441f29e1d33e938f29691f1b8508750e468b02cc04a7d6"
+      "sha256": "26acbd30c6fc150243a21127e7711d5067e6d47ac14e19c492809dc7fc99b4b8"
     },
     {
       "id": "gitlab-runner",
